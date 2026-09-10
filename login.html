@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VaultAI - Log in</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-wrap">
+
+  <div class="auth-brand">
+    <div class="brand-dots"></div>
+    <div class="brand-mark">V</div>
+    <h1>VaultAI</h1>
+    <p>Your documents, organized and within reach.</p>
+    <ul class="brand-points">
+      <li><span class="point-dot"></span>Upload anything, find it in seconds</li>
+      <li><span class="point-dot"></span>Folders that actually make sense</li>
+      <li><span class="point-dot"></span>AI assistance built in, coming soon</li>
+    </ul>
+  </div>
+
+  <div class="auth-panel">
+
+    <div class="auth-card" id="loginCard">
+      <h2>Welcome back</h2>
+      <p class="auth-sub">Log in to open your vault</p>
+      <form id="loginForm">
+        <label>Email</label>
+        <input type="email" id="loginEmail" required placeholder="you@example.com">
+        <label>Password</label>
+        <input type="password" id="loginPassword" required placeholder="••••••••">
+        <div class="auth-row">
+          <label class="remember"><input type="checkbox" id="rememberMe"> Remember me</label>
+          <a href="#" class="auth-link" id="forgotLink">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Log in</button>
+      </form>
+      <p class="auth-switch">New to VaultAI? <a href="#" id="showSignup">Create an account</a></p>
+      <p class="auth-error" id="loginError"></p>
+    </div>
+
+    <div class="auth-card" id="signupCard" style="display:none;">
+      <h2>Create your vault</h2>
+      <p class="auth-sub">Set up an account to get started</p>
+      <form id="signupForm">
+        <label>Full name</label>
+        <input type="text" id="signupName" required placeholder="Your name">
+        <label>Email</label>
+        <input type="email" id="signupEmail" required placeholder="you@example.com">
+        <label>Password</label>
+        <input type="password" id="signupPassword" required placeholder="Create a password">
+        <button type="submit" class="btn btn-primary btn-full">Create account</button>
+      </form>
+      <p class="auth-switch">Already have an account? <a href="#" id="showLogin">Log in</a></p>
+      <p class="auth-error" id="signupError"></p>
+    </div>
+
+  </div>
+</div>
+
+<script src="auth.js"></script>
+</body>
+</html>

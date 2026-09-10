@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VaultAI - Personal File Vault</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="logo-box">
+      <span>V</span>
+    </div>
+    <div class="brand-text">
+      <h1>VaultAI</h1>
+      <p>Personal file vault</p>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <button id="addFolderBtn" class="btn btn-outline">+ Folder</button>
+    <div class="user-block">
+      <span id="userNameTag" class="user-name-tag"></span>
+      <button id="avatarBtn" class="avatar" title="Log out"></button>
+    </div>
+  </div>
+</header>
+
+<div class="app-layout">
+
+  <aside class="sidebar">
+    <p class="sidebar-title">Folders</p>
+    <ul id="folderList" class="folder-list">
+      <li class="folder-item active" data-folder="All Files">
+        <span class="folder-dot dot-all"></span><span>All Files</span>
+      </li>
+      <li class="folder-item" data-folder="College">
+        <span class="folder-dot dot-college"></span><span>College</span>
+      </li>
+      <li class="folder-item" data-folder="Projects">
+        <span class="folder-dot dot-projects"></span><span>Projects</span>
+      </li>
+      <li class="folder-item" data-folder="Personal">
+        <span class="folder-dot dot-personal"></span><span>Personal</span>
+      </li>
+    </ul>
+    <button id="addFolderBtnSide" class="add-folder-link">+ Add folder</button>
+  </aside>
+
+  <main class="main-content">
+
+    <section class="hero">
+      <div class="hero-pattern"></div>
+      <div class="hero-text">
+        <span class="hero-eyebrow">Your vault</span>
+        <h2>Keep your files in one place.</h2>
+        <p>Upload, organize and find your documents easily.</p>
+      </div>
+      <div class="hero-action">
+        <button id="uploadBtn" class="btn btn-primary">+ Upload files</button>
+        <input type="file" id="fileInput" multiple hidden>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <div class="stat-card stat-a">
+        <p class="stat-label">Total Files</p>
+        <h3 id="statTotalFiles">0</h3>
+      </div>
+      <div class="stat-card stat-b">
+        <p class="stat-label">Folders</p>
+        <h3 id="statFolders">3</h3>
+      </div>
+      <div class="stat-card stat-c">
+        <p class="stat-label">Storage Used</p>
+        <h3 id="statStorage">0 KB</h3>
+      </div>
+    </section>
+
+    <section class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search your files...">
+      <select id="typeFilter">
+        <option value="all">All types</option>
+        <option value="pdf">PDF</option>
+        <option value="docx">DOCX</option>
+        <option value="image">Image</option>
+        <option value="other">Other</option>
+      </select>
+    </section>
+
+    <section class="files-section">
+      <div class="files-header">
+        <h3 id="filesHeading">My Files</h3>
+        <span id="fileCountTag" class="file-count-tag">0 files</span>
+      </div>
+
+      <div id="fileListWrapper">
+        <table class="file-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Folder</th>
+              <th>Size</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="fileTableBody"></tbody>
+        </table>
+        <p id="emptyState" class="empty-state" style="display:none;">No files found. Try uploading something.</p>
+      </div>
+    </section>
+
+    <section class="ai-section">
+      <h3>AI Assistance</h3>
+      <p class="ai-sub">Ask about a selected document</p>
+      <div class="ai-controls">
+        <select id="aiFileSelect">
+          <option value="">Select a file</option>
+        </select>
+        <button id="summarizeBtn" class="btn btn-outline">Summarize</button>
+        <button id="askAiBtn" class="btn btn-outline">Ask AI</button>
+      </div>
+      <div id="aiResponseBox" class="ai-response" style="display:none;"></div>
+      <p class="ai-note">AI requests will be handled securely through the backend.</p>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

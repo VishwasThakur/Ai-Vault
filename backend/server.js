@@ -64,6 +64,19 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     database: dbInfo,
+    envCheck: {
+      MONGODB_URI: Boolean(process.env.MONGODB_URI),
+      JWT_SECRET: Boolean(process.env.JWT_SECRET),
+      JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '2h (default)',
+      CRITICAL_VAULT_EXPIRES_IN: process.env.CRITICAL_VAULT_EXPIRES_IN || '15m (default)',
+      CLOUDINARY_CONFIGURED: Boolean(
+        process.env.CLOUDINARY_CLOUD_NAME &&
+        process.env.CLOUDINARY_API_KEY &&
+        process.env.CLOUDINARY_API_SECRET
+      ),
+      GEMINI_API_KEYS_SET: Boolean(process.env.GEMINI_API_KEYS || process.env.GEMINI_API_KEY),
+      GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite (default)',
+    },
   });
 });
 

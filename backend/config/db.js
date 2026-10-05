@@ -47,28 +47,10 @@ const connectDB = async () => {
       return;
     } catch (error) {
       console.error('MongoDB Connection Error with provided MONGODB_URI:', error.message);
-      dbStatus = {
-        connected: false,
-        message: 'Failed to connect using provided MONGODB_URI',
-        error: error.message,
-      };
-      if (process.env.NODE_ENV === 'production') {
-        console.error('CRITICAL: Production MongoDB connection failed. Please verify MONGODB_URI in Render dashboard.');
-        return;
-      }
-      console.log('Local/Dev: Falling back to embedded in-memory database...');
+      console.warn('Falling back to embedded in-memory database...');
     }
   } else {
-    console.warn('MONGODB_URI is not set in environment.');
-    dbStatus = {
-      connected: false,
-      message: 'MONGODB_URI environment variable is not set',
-      error: 'Missing MONGODB_URI',
-    };
-    if (process.env.NODE_ENV === 'production') {
-      console.error('CRITICAL: MONGODB_URI is missing in production environment variables.');
-      return;
-    }
+    console.warn('MONGODB_URI is not set in environment. Falling back to embedded in-memory database...');
   }
 
   try {
@@ -76,11 +58,19 @@ const connectDB = async () => {
     mongodInstance = await MongoMemoryServer.create();
     const memUri = mongodInstance.getUri();
     await mongoose.connect(memUri);
-    console.log('Connected to embedded in-memory MongoDB.');
-    dbStatus = { connected: true, message: 'Connected to embedded in-memory MongoDB', error: null };
+    console.log('Connected to embedded in-memory MongoDB fallback.');
+    dbStatus = {
+      connected: true,
+      message: 'Connected to embedded in-memory MongoDB (zero-config fallback). Set MONGODB_URI in Render dashboard for permanent Atlas storage.',
+      error: null,
+    };
   } catch (error) {
     console.error('Failed to initialize embedded in-memory MongoDB:', error.message);
-    dbStatus = { connected: false, message: 'Failed to initialize in-memory DB', error: error.message };
+    dbStatus = {
+      connected: false,
+      message: 'Failed to initialize database (MONGODB_URI not provided, in-memory fallback failed)',
+      error: error.message,
+    };
   }
 };
 

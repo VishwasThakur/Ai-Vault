@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 
 process.on('uncaughtException', (err) => {
   console.error('Process uncaughtException:', err.message);
@@ -17,18 +19,52 @@ const { connectDB } = require('./config/db');
 
 const app = express();
 
-const fs = require('fs');
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'https://ai-vault-sandy.vercel.app',
+  /\.vercel\.app$/,
+];
+
+if (process.env.CLIENT_URL) {
+  allowedOrigins.push(process.env.CLIENT_URL.trim());
+}
 
 app.use(
   cors({
-    origin: true,
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      const isAllowed = allowedOrigins.some((allowed) =>
+        allowed instanceof RegExp ? allowed.test(origin) : allowed === origin
+      );
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
+
+app.options('*', cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Health check route
+app.get('/api/health', (req, res) => {
+  const isDbConnected = mongoose.connection.readyState === 1;
+  res.status(200).json({
+    status: 'ok',
+    uptime: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+    database: isDbConnected ? 'connected' : 'disconnected',
+  });
+});
 
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/folders', require('./routes/folderRoutes'));
@@ -47,9 +83,24 @@ if (fs.existsSync(frontendDist)) {
     }
     res.sendFile(path.join(frontendDist, 'index.html'));
   });
+} else {
+  app.get('/', (req, res) => {
+    res.status(200).json({
+      status: 'ok',
+      message: 'VaultAI Express API is live and healthy',
+      health: '/api/health',
+    });
+  });
 }
 
 app.use((err, req, res, next) => {
+  if (err.message === 'Not allowed by CORS') {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied: origin not allowed by CORS policy',
+    });
+  }
+
   if (err.code === 'LIMIT_FILE_SIZE') {
     return res.status(400).json({
       success: false,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -7,6 +7,25 @@ import { loginUser, registerUser } from '../services/api';
 export const LoginPage = () => {
   const [isLoginTab, setIsLoginTab] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [loadingNotice, setLoadingNotice] = useState('');
+
+  useEffect(() => {
+    let t1, t2;
+    if (loading) {
+      t1 = setTimeout(() => {
+        setLoadingNotice('Connecting to server...');
+      }, 2500);
+      t2 = setTimeout(() => {
+        setLoadingNotice('Waking up the server, this may take up to a minute (Render free-tier cold start)...');
+      }, 6000);
+    } else {
+      setLoadingNotice('');
+    }
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [loading]);
 
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -152,6 +171,36 @@ export const LoginPage = () => {
                 <span className="btn-text">Sign In to Vault</span>
               )}
             </button>
+            {loading && loadingNotice && (
+              <div
+                style={{
+                  marginTop: '12px',
+                  padding: '10px 14px',
+                  background: 'rgba(59, 130, 246, 0.08)',
+                  border: '1px solid #bfdbfe',
+                  borderRadius: '8px',
+                  fontSize: '0.825rem',
+                  color: '#1d4ed8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  lineHeight: 1.4,
+                }}
+              >
+                <div
+                  className="spinner"
+                  style={{
+                    width: '14px',
+                    height: '14px',
+                    borderWidth: '2px',
+                    borderColor: '#3b82f6',
+                    borderTopColor: 'transparent',
+                    flexShrink: 0,
+                  }}
+                />
+                <span>{loadingNotice}</span>
+              </div>
+            )}
           </form>
         ) : (
           <form onSubmit={handleRegisterSubmit}>
@@ -224,6 +273,36 @@ export const LoginPage = () => {
                 <span className="btn-text">Create Free Account</span>
               )}
             </button>
+            {loading && loadingNotice && (
+              <div
+                style={{
+                  marginTop: '12px',
+                  padding: '10px 14px',
+                  background: 'rgba(59, 130, 246, 0.08)',
+                  border: '1px solid #bfdbfe',
+                  borderRadius: '8px',
+                  fontSize: '0.825rem',
+                  color: '#1d4ed8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  lineHeight: 1.4,
+                }}
+              >
+                <div
+                  className="spinner"
+                  style={{
+                    width: '14px',
+                    height: '14px',
+                    borderWidth: '2px',
+                    borderColor: '#3b82f6',
+                    borderTopColor: 'transparent',
+                    flexShrink: 0,
+                  }}
+                />
+                <span>{loadingNotice}</span>
+              </div>
+            )}
           </form>
         )}
       </div>

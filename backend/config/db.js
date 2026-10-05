@@ -6,33 +6,47 @@ mongoose.connection.on('error', (err) => {
   console.warn('Mongoose connection warning:', err.message);
 });
 
+mongoose.connection.on('connected', () => {
+  console.log('MongoDB connection established successfully.');
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.warn('MongoDB disconnected.');
+});
+
 const connectDB = async () => {
   const uri = process.env.MONGODB_URI;
 
-  try {
-    if (uri && (uri.startsWith('mongodb+srv://') || uri.includes('@'))) {
-      await mongoose.connect(uri);
-      console.log('Connected to MongoDB Atlas successfully.');
+  if (uri && uri.trim()) {
+    try {
+      console.log('Connecting to MongoDB via MONGODB_URI...');
+      await mongoose.connect(uri.trim(), { serverSelectionTimeoutMS: 5000 });
+      console.log('Connected to MongoDB database successfully.');
+      return;
+    } catch (error) {
+      console.error('MongoDB Connection Error with provided MONGODB_URI:', error.message);
+      if (process.env.NODE_ENV === 'production') {
+        console.error('CRITICAL: Production MongoDB connection failed. Please verify MONGODB_URI in Render dashboard.');
+        return;
+      }
+      console.log('Local/Dev: Falling back to embedded in-memory database...');
+    }
+  } else {
+    console.warn('MONGODB_URI is not set in environment.');
+    if (process.env.NODE_ENV === 'production') {
+      console.error('CRITICAL: MONGODB_URI is missing in production environment variables.');
       return;
     }
+  }
 
-    if (uri && uri.startsWith('mongodb://') && !uri.includes('@')) {
-      try {
-        await mongoose.connect(uri, { serverSelectionTimeoutMS: 2000 });
-        console.log('Connected to local MongoDB instance.');
-        return;
-      } catch (localErr) {
-        console.log('Local MongoDB not running. Initializing embedded in-memory MongoDB...');
-      }
-    }
-
+  try {
     const { MongoMemoryServer } = require('mongodb-memory-server');
     mongodInstance = await MongoMemoryServer.create();
     const memUri = mongodInstance.getUri();
     await mongoose.connect(memUri);
     console.log('Connected to embedded in-memory MongoDB.');
   } catch (error) {
-    console.error('MongoDB Connection Error:', error.message);
+    console.error('Failed to initialize embedded in-memory MongoDB:', error.message);
   }
 };
 

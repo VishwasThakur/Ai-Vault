@@ -15,7 +15,7 @@ process.on('unhandledRejection', (reason) => {
 
 dotenv.config();
 
-const { connectDB } = require('./config/db');
+const { connectDB, getDbStatus } = require('./config/db');
 
 const app = express();
 
@@ -57,12 +57,13 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health check route
 app.get('/api/health', (req, res) => {
-  const isDbConnected = mongoose.connection.readyState === 1;
+  const dbInfo = getDbStatus();
   res.status(200).json({
     status: 'ok',
     uptime: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
-    database: isDbConnected ? 'connected' : 'disconnected',
+    environment: process.env.NODE_ENV || 'development',
+    database: dbInfo,
   });
 });
 
